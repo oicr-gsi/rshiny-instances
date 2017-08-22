@@ -114,6 +114,9 @@ shinyUI(fluidPage(
 			)
 		)
 	),
+	hr(),
+	titlePanel("Percent on Target vs Total Reads (Pass filter)"),
+	plotOutput("runReports_onTargetVSTotalReadsPlot", height = "80vh"),
 	hr()
 ))
 

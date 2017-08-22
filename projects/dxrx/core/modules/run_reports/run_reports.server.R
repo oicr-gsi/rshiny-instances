@@ -193,3 +193,13 @@ output$runReports_meanCoveragePlot <- renderPlot({
 	plot <- plot + scale_fill_manual(values=c("0" = gg_color_hue(2)[1], "1" = gg_color_hue(2)[2]))  
 	plot
 })
+output$runReports_onTargetVSTotalReadsPlot <- renderPlot({
+
+	d <- data.frame(rrdf$Library, as.numeric(gsub(",","",rrdf$PF.Reads)), as.numeric(gsub("%","",rrdf$Percent.mapped.on.Target)))
+	colnames(d) <- c("library","my_x","my_y")
+	windowWidth <- max(d$my_x) * 1.10
+	windowHeight <- 100.0
+	plot <- ggplot(d, aes(x=my_x, y=my_y)) + geom_point() + labs(x="total reads (pass filter)", y="percent of mapped reads on target") + scale_x_continuous(limits=c(0.0,windowWidth)) + scale_y_continuous(limits=c(0.0,windowHeight))
+	plot <- plot + theme(legend.position="none")
+	plot
+})

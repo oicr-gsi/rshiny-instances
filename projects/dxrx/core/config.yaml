@@ -1,0 +1,5 @@
+app-instance:
+    app_dir: /home/ubuntu/git/rshiny/templates/core
+    project: DXRX
+    data_dir: /home/ubuntu/data/dxrx/core
+    instance_dir: /home/ubuntu/git/rshiny-instances/projects/dxrx/core

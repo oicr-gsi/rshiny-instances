@@ -1,8 +1,8 @@
 library(shiny)
-rrdf <- read.table("/home/ubuntu/data/dxrx/core/run_reports/project_only/all.lanes.tsv",header=TRUE,sep="\t")
+rrdf <- read.table("/home/ubuntu/data/gecco/core/run_reports/project_only/all.lanes.tsv",header=TRUE,sep="\t")
 
 shinyUI(fluidPage(
-	headerPanel("DxRx Run Report Analysis"),
+	headerPanel("GECCO Run Report Analysis"),
 	hr(), 
 
 	titlePanel("Total Reads (Pass filter)"),

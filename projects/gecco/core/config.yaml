@@ -1,0 +1,6 @@
+app-instance:
+    app_dir: /home/ubuntu/git/rshiny/templates/core
+    project: GECCO
+    data_dir: /home/ubuntu/data/gecco/core
+    instance_dir: /home/ubuntu/git/rshiny-instances/projects/gecco/core
+    shiny_dir: /srv/shiny-server/instances/gecco

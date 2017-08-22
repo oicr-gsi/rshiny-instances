@@ -6,7 +6,7 @@ gg_color_hue <- function(n) {
 	hcl(h = hues, l = 65, c = 100)[1:n]
 }
 
-df <- read.table("/home/ubuntu/data/dxrx/core/cumulative_reports/cumulative.report.tsv",header=TRUE,sep="\t")
+df <- read.table("/home/ubuntu/data/gecco/core/cumulative_reports/cumulative.report.tsv",header=TRUE,sep="\t")
 
 output$cumlativeReports_totalReadsPlot <- renderPlot({
 	myseq <- seq(from=1,to=nrow(df))

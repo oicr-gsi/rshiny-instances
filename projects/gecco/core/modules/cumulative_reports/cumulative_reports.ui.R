@@ -1,8 +1,8 @@
 library(shiny)
-df <- read.table("/home/ubuntu/data/dxrx/core/cumulative_reports/cumulative.report.tsv",header=TRUE,sep="\t")
+df <- read.table("/home/ubuntu/data/gecco/core/cumulative_reports/cumulative.report.tsv",header=TRUE,sep="\t")
 
 shinyUI(fluidPage(
-	headerPanel("DxRx Cumulative Report Analysis"),
+	headerPanel("GECCO Cumulative Report Analysis"),
 	hr(), 
 
 	titlePanel("Total Reads (Pass filter)"),

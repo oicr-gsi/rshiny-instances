@@ -1,4 +1,6 @@
 library(shiny)
+library(ggplot2)
+library(plotly)
 rrdf <- read.table("/home/ubuntu/data/gecco/core/run_reports/project_only/all.lanes.tsv",header=TRUE,sep="\t")
 
 shinyUI(fluidPage(
@@ -6,7 +8,7 @@ shinyUI(fluidPage(
 	hr(), 
 
 	titlePanel("Total Reads (Pass filter)"),
-	plotOutput("runReports_totalReadsPlot", height = "80vh"),
+	plotlyOutput("runReports_totalReadsPlot", height = "80vh"),
 	hr(),
 	fluidRow(
 		column(3,
@@ -22,13 +24,22 @@ shinyUI(fluidPage(
 				c("None" = "none",
 				"Run" = "Run",
 				"Lane" = "Lane",
-				"Run and Lane" = "Run_Lane")
+				"Run and Lane" = "Run_Lane",
+				"Barcode" = "Barcode",
+				"Study" = "Study",
+				"Subject" = "Subject",
+				"Sample" = "Sample",
+				"Tissue Type and Origin" = "Tissue_type_origin",
+				"Date" = "Date",
+				"Instrument" = "Instrument",
+				"Increment" = "Increment",
+				"Flowcell" = "Flowcell")
 			)
 		)
 	),
 	hr(),
 	titlePanel("Mean Insert Size"),
-	plotOutput("runReports_insertMeanPlot", height = "80vh"),
+	plotlyOutput("runReports_insertMeanPlot", height = "80vh"),
 	hr(),
 	fluidRow(
 		column(3,
@@ -44,13 +55,22 @@ shinyUI(fluidPage(
 				c("None" = "none",
 				"Run" = "Run",
 				"Lane" = "Lane",
-				"Run and Lane" = "Run_Lane")
+				"Run and Lane" = "Run_Lane",
+				"Barcode" = "Barcode",
+				"Study" = "Study",
+				"Subject" = "Subject",
+				"Sample" = "Sample",
+				"Tissue Type and Origin" = "Tissue_type_origin",
+				"Date" = "Date",
+				"Instrument" = "Instrument",
+				"Increment" = "Increment",
+				"Flowcell" = "Flowcell")
 			)
 		)
 	),
 	hr(),
 	titlePanel("Percent Mapped"),
-	plotOutput("runReports_percentMappedPlot", height = "80vh"),
+	plotlyOutput("runReports_percentMappedPlot", height = "80vh"),
 	hr(),
 	fluidRow(
 		column(3,
@@ -66,13 +86,22 @@ shinyUI(fluidPage(
 				c("None" = "none",
 				"Run" = "Run",
 				"Lane" = "Lane",
-				"Run and Lane" = "Run_Lane")
+				"Run and Lane" = "Run_Lane",
+				"Barcode" = "Barcode",
+				"Study" = "Study",
+				"Subject" = "Subject",
+				"Sample" = "Sample",
+				"Tissue Type and Origin" = "Tissue_type_origin",
+				"Date" = "Date",
+				"Instrument" = "Instrument",
+				"Increment" = "Increment",
+				"Flowcell" = "Flowcell")
 			)
 		)
 	),
 	hr(),
 	titlePanel("Percent On Target"),
-	plotOutput("runReports_percentOntPlot", height = "80vh"),
+	plotlyOutput("runReports_percentOntPlot", height = "80vh"),
 	hr(),
 	fluidRow(
 		column(3,
@@ -88,13 +117,22 @@ shinyUI(fluidPage(
 				c("None" = "none",
 				"Run" = "Run",
 				"Lane" = "Lane",
-				"Run and Lane" = "Run_Lane")
+				"Run and Lane" = "Run_Lane",
+				"Barcode" = "Barcode",
+				"Study" = "Study",
+				"Subject" = "Subject",
+				"Sample" = "Sample",
+				"Tissue Type and Origin" = "Tissue_type_origin",
+				"Date" = "Date",
+				"Instrument" = "Instrument",
+				"Increment" = "Increment",
+				"Flowcell" = "Flowcell")
 			)
 		)
 	),
 	hr(),
 	titlePanel("Mean Coverage"),
-	plotOutput("runReports_meanCoveragePlot", height = "80vh"),
+	plotlyOutput("runReports_meanCoveragePlot", height = "80vh"),
 	hr(),
 	fluidRow(
 		column(3,
@@ -110,7 +148,16 @@ shinyUI(fluidPage(
 				c("None" = "none",
 				"Run" = "Run",
 				"Lane" = "Lane",
-				"Run and Lane" = "Run_Lane")
+				"Run and Lane" = "Run_Lane",
+				"Barcode" = "Barcode",
+				"Study" = "Study",
+				"Subject" = "Subject",
+				"Sample" = "Sample",
+				"Tissue Type and Origin" = "Tissue_type_origin",
+				"Date" = "Date",
+				"Instrument" = "Instrument",
+				"Increment" = "Increment",
+				"Flowcell" = "Flowcell")
 			)
 		)
 	),

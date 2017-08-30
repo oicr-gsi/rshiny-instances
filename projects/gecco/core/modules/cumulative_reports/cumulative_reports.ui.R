@@ -1,56 +1,44 @@
 library(shiny)
-df <- read.table("/home/ubuntu/data/gecco/core/cumulative_reports/cumulative.report.tsv",header=TRUE,sep="\t")
+library(ggplot2)
+library(plotly)
+df <- read.table("/home/ubuntu/data/gecco/core/cumulative_reports/cumulative.report.formatted.tsv",header=TRUE,sep="\t")
 
 shinyUI(fluidPage(
 	headerPanel("GECCO Cumulative Report Analysis"),
 	hr(), 
 
-	titlePanel("Total Reads (Pass filter)"),
-	plotOutput("cumlativeReports_totalReadsPlot", height = "80vh"),
+	titlePanel("Aggregate Reads (Pass filter)"),
+	plotlyOutput("cumlativeReports_AggregateReadsPlot", height = "80vh"),
 	hr(),
 	fluidRow(
 		column(3,
-			sliderInput("cumlativeReports_totalReadsFailThreshold",
+			sliderInput("cumlativeReports_AggregateReadsFailThreshold",
 				"fail threshold:",
 				min = 0,
-				max = max(as.numeric(gsub(",","",df$Total.Reads))) * 1.10,
+				max = max(as.numeric(gsub(",","",df$Aggregate.PF.Reads))) * 1.10,
 				value = 0
 			)
 		),
 		column(3,
-			selectInput("cumlativeReports_totalReadsGroup", "Group by:",
+			selectInput("cumlativeReports_AggregateReadsGroup", "Group by:",
 				c("None" = "none",
-				"Sample" = "Sample")
+				"Last Modified" = "Last.Modified",
+				"Sample" = "Sample",
+				"Study" = "Study",
+				"Subject" = "Subject",
+				"Sample without GroupID" = "SampleNoGID",
+				"Tissue Type and Origin" = "Tissue_type_origin",
+				"Tissue Type, Origin, and GroupID" = "Tissue_type_origin_groupid")
 			)
 		)
 	),
 	hr(),
-	titlePanel("Average Read Length"),
-	plotOutput("cumlativeReports_readLengthPlot", height = "80vh"),
+	titlePanel("Percent Aggregate Excluded Reads"),
+	plotlyOutput("cumlativeReports_percentAggregateExcludedReadsPlot", height = "80vh"),
 	hr(),
 	fluidRow(
 		column(3,
-			sliderInput("cumlativeReports_readLengthFailThreshold",
-				"fail threshold:",
-				min = 0,
-				max = max(df$Aver..Read.Length),
-				value = 0
-			)
-		),
-		column(3,
-			selectInput("cumlativeReports_readLengthGroup", "Group by:",
-				c("None" = "none",
-				"Sample" = "Sample")
-			)
-		)
-	),
-	hr(),
-	titlePanel("Percent Mapped"),
-	plotOutput("cumlativeReports_percentMappedPlot", height = "80vh"),
-	hr(),
-	fluidRow(
-		column(3,
-			sliderInput("cumlativeReports_percentMappedFailThreshold",
+			sliderInput("cumlativeReports_percentAggregateExcludedReadsFailThreshold",
 				"fail threshold:",
 				min = 0,
 				max = 100.0,
@@ -58,15 +46,47 @@ shinyUI(fluidPage(
 			)
 		),
 		column(3,
-			selectInput("cumlativeReports_percentMappedGroup", "Group by:",
+			selectInput("cumlativeReports_percentAggregateExcludedReadsGroup", "Group by:",
 				c("None" = "none",
-				"Sample" = "Sample")
+				"Last Modified" = "Last.Modified",
+				"Sample" = "Sample",
+				"Study" = "Study",
+				"Subject" = "Subject",
+				"Sample without GroupID" = "SampleNoGID",
+				"Tissue Type and Origin" = "Tissue_type_origin",
+				"Tissue Type, Origin, and GroupID" = "Tissue_type_origin_groupid")
+			)
+		)
+	),
+	hr(),
+	titlePanel("Average Read Length"),
+	plotlyOutput("cumlativeReports_averageReadLengthPlot", height = "80vh"),
+	hr(),
+	fluidRow(
+		column(3,
+			sliderInput("cumlativeReports_averageReadLengthFailThreshold",
+				"fail threshold:",
+				min = 0,
+				max = max(df$Average.Read.Length),
+				value = 0
+			)
+		),
+		column(3,
+			selectInput("cumlativeReports_averageReadLengthGroup", "Group by:",
+				c("None" = "none",
+				"Last Modified" = "Last.Modified",
+				"Sample" = "Sample",
+				"Study" = "Study",
+				"Subject" = "Subject",
+				"Sample without GroupID" = "SampleNoGID",
+				"Tissue Type and Origin" = "Tissue_type_origin",
+				"Tissue Type, Origin, and GroupID" = "Tissue_type_origin_groupid")
 			)
 		)
 	),
 	hr(),
 	titlePanel("Percent On Target"),
-	plotOutput("cumlativeReports_percentOntPlot", height = "80vh"),
+	plotlyOutput("cumlativeReports_percentOntPlot", height = "80vh"),
 	hr(),
 	fluidRow(
 		column(3,
@@ -80,33 +100,45 @@ shinyUI(fluidPage(
 		column(3,
 			selectInput("cumlativeReports_percentOntGroup", "Group by:",
 				c("None" = "none",
-				"Sample" = "Sample")
+				"Last Modified" = "Last.Modified",
+				"Sample" = "Sample",
+				"Study" = "Study",
+				"Subject" = "Subject",
+				"Sample without GroupID" = "SampleNoGID",
+				"Tissue Type and Origin" = "Tissue_type_origin",
+				"Tissue Type, Origin, and GroupID" = "Tissue_type_origin_groupid")
 			)
 		)
 	),
 	hr(),
 	titlePanel("Mean Coverage"),
-	plotOutput("cumlativeReports_meanCoveragePlot", height = "80vh"),
+	plotlyOutput("cumlativeReports_meanCoveragePlot", height = "80vh"),
 	hr(),
 	fluidRow(
 		column(3,
 			sliderInput("cumlativeReports_meanCoverageFailThreshold",
 				"fail threshold:",
 				min = 0,
-				max = max(as.numeric(gsub("x","",df$Aver..Coverage))) * 1.10,
+				max = max(df$Average.Coverage),
 				value = 0
 			)
 		),
 		column(3,
 			selectInput("cumlativeReports_meanCoverageGroup", "Group by:",
 				c("None" = "none",
-				"Sample" = "Sample")
+				"Last Modified" = "Last.Modified",
+				"Sample" = "Sample",
+				"Study" = "Study",
+				"Subject" = "Subject",
+				"Sample without GroupID" = "SampleNoGID",
+				"Tissue Type and Origin" = "Tissue_type_origin",
+				"Tissue Type, Origin, and GroupID" = "Tissue_type_origin_groupid")
 			)
 		)
 	),
 	hr(),
 	titlePanel("Percent of Target Covered at 8x or Higher"),
-	plotOutput("cumlativeReports_percentCoverageEightXPlot", height = "80vh"),
+	plotlyOutput("cumlativeReports_percentCoverageEightXPlot", height = "80vh"),
 	hr(),
 	fluidRow(
 		column(3,
@@ -120,13 +152,19 @@ shinyUI(fluidPage(
 		column(3,
 			selectInput("cumlativeReports_percentCoverageEightXGroup", "Group by:",
 				c("None" = "none",
-				"Sample" = "Sample")
+				"Last Modified" = "Last.Modified",
+				"Sample" = "Sample",
+				"Study" = "Study",
+				"Subject" = "Subject",
+				"Sample without GroupID" = "SampleNoGID",
+				"Tissue Type and Origin" = "Tissue_type_origin",
+				"Tissue Type, Origin, and GroupID" = "Tissue_type_origin_groupid")
 			)
 		)
 	),
 	hr(),
 	titlePanel("Minimum Coverage for 90% of Target"),
-	plotOutput("cumlativeReports_minCoverageForNinetyPercentOfTargetPlot", height = "80vh"),
+	plotlyOutput("cumlativeReports_minCoverageForNinetyPercentOfTargetPlot", height = "80vh"),
 	hr(),
 	fluidRow(
 		column(3,
@@ -140,7 +178,13 @@ shinyUI(fluidPage(
 		column(3,
 			selectInput("cumlativeReports_minCoverageForNinetyPercentOfTargetGroup", "Group by:",
 				c("None" = "none",
-				"Sample" = "Sample")
+				"Last Modified" = "Last.Modified",
+				"Sample" = "Sample",
+				"Study" = "Study",
+				"Subject" = "Subject",
+				"Sample without GroupID" = "SampleNoGID",
+				"Tissue Type and Origin" = "Tissue_type_origin",
+				"Tissue Type, Origin, and GroupID" = "Tissue_type_origin_groupid")
 			)
 		)
 	),

@@ -17,10 +17,10 @@ shinyUI(
         ),
         navbarMenu("Modules",
             tabPanel("Run Reports",
-                #source("/home/ubuntu/git/rshiny-instances/projects/dxrx/core/modules/run_reports/run_reports.ui.R")
+                source("/home/ubuntu/git/rshiny-instances/projects/dxrx/core/modules/run_reports/run_reports.ui.R")
             ),
             tabPanel("Cumulative Reports",
-                #source("/home/ubuntu/git/rshiny-instances/projects/dxrx/core/modules/cumulative_reports/cumulative_reports.ui.R")
+                source("/home/ubuntu/git/rshiny-instances/projects/dxrx/core/modules/cumulative_reports/cumulative_reports.ui.R")
             )
         )
     )

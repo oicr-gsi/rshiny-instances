@@ -34,7 +34,7 @@ shinyUI(
                         )
                     ),
                     mainPanel(
-                        plotlyOutput("runReports_totalReadsPlot", height = "80vh")
+                        plotlyOutput("runReports_totalReadsPlot")
                     )
                 )
             )

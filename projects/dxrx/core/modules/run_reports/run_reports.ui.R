@@ -9,33 +9,9 @@ shinyUI(
         navbarMenu("Plots",
 	
             tabPanel("Total Reads(Pass filter)",
-                sidebarLayout(
-                    sidebarPanel(
-                        sliderInput("runReports_totalReadsFailThreshold",
-                            "fail threshold:",
-                            min = 0,
-                            max = max(as.numeric(gsub(",","",rrdf$PF.Reads))) * 1.10,
-                            value = 0
-                        ),       
-                        selectInput("runReports_totalReadsGroup", "Group by:",
-                            c("None" = "none",
-                            "Run" = "Run",
-                            "Lane" = "Lane",
-                            "Run and Lane" = "Run_Lane",
-                            "Barcode" = "Barcode",
-                            "Study" = "Study",
-                            "Subject" = "Subject",
-                            "Sample" = "Sample",
-                            "Tissue Type and Origin" = "Tissue_type_origin",
-                            "Date" = "Date",
-                            "Instrument" = "Instrument",
-                            "Increment" = "Increment",
-                            "Flowcell" = "Flowcell")
-                        )
-                    ),
-                    mainPanel(
-                        plotlyOutput("runReports_totalReadsPlot")
-                    )
+                fluidPage(
+                    bsButton("showpanel", "Show/hide sidebar", type = "toggle", value = TRUE),
+                    uiOutput('ui')
                 )
             )
         )

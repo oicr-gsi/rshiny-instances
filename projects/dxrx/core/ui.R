@@ -1,4 +1,5 @@
 library(shiny)
+library(shinyBS)
 
 shinyUI(
     navbarPage(theme="/home/ubuntu/git/rshiny-instances/projects/dxrx/core/www/styles.css",

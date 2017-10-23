@@ -8,9 +8,14 @@ shinyUI(
         tabPanel("About"
         ),
         navbarMenu("Tables",
-            tabPanel("FileMap",
+            tabPanel("FileMap - Single Sample",
                 mainPanel(
-                    tableOutput('table')
+                    tableOutput('table_single')
+                )
+            ),
+            tabPanel("FileMap - Paired Samples",
+                mainPanel(
+                    tableOutput('table_paired')
                 )
             )
         )

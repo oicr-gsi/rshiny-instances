@@ -1,0 +1,90 @@
+library(ggplot2)
+    
+genP <- function(dataset,pattern,type_label,ttype,togsub,yvalue,ylabel) {
+    d <- read.table("/home/ubuntu/data/other-apps/GBS-534-target-amp/data/GBS-534-target-amp-run-report.sorted.rows_added.cs_added.tsv",header=TRUE,sep="\t")
+    d$value <- as.numeric(gsub(togsub,"",d[[yvalue]]))
+    d <- d[which(grepl(dataset,d$sample)),]
+    d <- d[which(grepl(pattern,d$library_type)),]
+    
+    ds <- d[which(grepl(ttype,d$plate_type)),]
+    p <- ggplot(ds, aes(x=sample, y=value))
+    p <- p + geom_point(stat="identity", aes(color=library_type))
+    p <- p + labs(x=type_label, y=ylabel)
+    p <- p + scale_y_continuous(limits=c(0.0,max(d$value)))
+    
+    atype <- ""
+    if (pattern == "C|D") {
+        atype <- "A"
+    } else if (pattern == "A|B|C") {
+        atype <- "B"
+    }
+    
+    o <- paste("/home/ubuntu/data/other-apps/GBS-534-target-amp/plots/",dataset,".",atype,".",ttype,".",ylabel,".png",sep="")
+    ggsave(o,p)
+}
+
+
+genP("GECCO", "C|D" , "GECCO tumor libraries" , "tumor" , "," , "PF.Reads" , "PF.Reads")
+genP("GECCO" , "C|D" , "GECCO normal libraries" , "normal" , "," , "PF.Reads" , "PF.Reads")
+genP("GECCO", "A|B|C" , "GECCO tumor libraries" , "tumor" , "," , "PF.Reads" , "PF.Reads")
+genP("GECCO" , "A|B|C" , "GECCO normal libraries" , "normal" , "," , "PF.Reads" , "PF.Reads")
+genP("GCONT", "C|D" , "GCONT tumor plate libraries" , "tumor" , "," , "PF.Reads" , "PF.Reads")
+genP("GCONT" , "C|D" , "GCONT normal plate libraries" , "normal" , "," , "PF.Reads" , "PF.Reads")
+genP("GCONT", "A|B|C" , "GCONT tumor plate libraries" , "tumor" , "," , "PF.Reads" , "PF.Reads")
+genP("GCONT" , "A|B|C" , "GCONT normal plate libraries" , "normal" , "," , "PF.Reads" , "PF.Reads")
+genP("GECCO", "C|D" , "GECCO tumor libraries" , "tumor" , "%" , "Map.Percent" , "Map.Percent")
+genP("GECCO" , "C|D" , "GECCO normal libraries" , "normal" , "%" , "Map.Percent" , "Map.Percent")
+genP("GECCO", "A|B|C" , "GECCO tumor libraries" , "tumor" , "%" , "Map.Percent" , "Map.Percent")
+genP("GECCO" , "A|B|C" , "GECCO normal libraries" , "normal" , "%" , "Map.Percent" , "Map.Percent")
+genP("GCONT", "C|D" , "GCONT tumor plate libraries" , "tumor" , "%" , "Map.Percent" , "Map.Percent")
+genP("GCONT" , "C|D" , "GCONT normal plate libraries" , "normal" , "%" , "Map.Percent" , "Map.Percent")
+genP("GCONT", "A|B|C" , "GCONT tumor plate libraries" , "tumor" , "%" , "Map.Percent" , "Map.Percent")
+genP("GCONT" , "A|B|C" , "GCONT normal plate libraries" , "normal" , "%" , "Map.Percent" , "Map.Percent")
+genP("GECCO", "C|D" , "GECCO tumor libraries" , "tumor" , "%" , "Percent.mapped.on.Target" , "Percent.mapped.on.Target")
+genP("GECCO" , "C|D" , "GECCO normal libraries" , "normal" , "%" , "Percent.mapped.on.Target" , "Percent.mapped.on.Target")
+genP("GECCO", "A|B|C" , "GECCO tumor libraries" , "tumor" , "%" , "Percent.mapped.on.Target" , "Percent.mapped.on.Target")
+genP("GECCO" , "A|B|C" , "GECCO normal libraries" , "normal" , "%" , "Percent.mapped.on.Target" , "Percent.mapped.on.Target")
+genP("GCONT", "C|D" , "GCONT tumor plate libraries" , "tumor" , "%" , "Percent.mapped.on.Target" , "Percent.mapped.on.Target")
+genP("GCONT" , "C|D" , "GCONT normal plate libraries" , "normal" , "%" , "Percent.mapped.on.Target" , "Percent.mapped.on.Target")
+genP("GCONT", "A|B|C" , "GCONT tumor plate libraries" , "tumor" , "%" , "Percent.mapped.on.Target" , "Percent.mapped.on.Target")
+genP("GCONT" , "A|B|C" , "GCONT normal plate libraries" , "normal" , "%" , "Percent.mapped.on.Target" , "Percent.mapped.on.Target")
+genP("GECCO", "C|D" , "GECCO tumor libraries" , "tumor" , "x" , "Coverage" , "Coverage")
+genP("GECCO" , "C|D" , "GECCO normal libraries" , "normal" , "x" , "Coverage" , "Coverage")
+genP("GECCO", "A|B|C" , "GECCO tumor libraries" , "tumor" , "x" , "Coverage" , "Coverage")
+genP("GECCO" , "A|B|C" , "GECCO normal libraries" , "normal" , "x" , "Coverage" , "Coverage")
+genP("GCONT", "C|D" , "GCONT tumor plate libraries" , "tumor" , "x" , "Coverage" , "Coverage")
+genP("GCONT" , "C|D" , "GCONT normal plate libraries" , "normal" , "x" , "Coverage" , "Coverage")
+genP("GCONT", "A|B|C" , "GCONT tumor plate libraries" , "tumor" , "x" , "Coverage" , "Coverage")
+genP("GCONT" , "A|B|C" , "GCONT normal plate libraries" , "normal" , "x" , "Coverage" , "Coverage")
+genP("GECCO", "C|D" , "GECCO tumor libraries" , "tumor" , "%" , "pBasesCovered1xOrHigher" , "pBasesCovered1xOrHigher")
+genP("GECCO" , "C|D" , "GECCO normal libraries" , "normal" , "%" , "pBasesCovered1xOrHigher" , "pBasesCovered1xOrHigher")
+genP("GECCO", "A|B|C" , "GECCO tumor libraries" , "tumor" , "%" , "pBasesCovered1xOrHigher" , "pBasesCovered1xOrHigher")
+genP("GECCO" , "A|B|C" , "GECCO normal libraries" , "normal" , "%" , "pBasesCovered1xOrHigher" , "pBasesCovered1xOrHigher")
+genP("GCONT", "C|D" , "GCONT tumor plate libraries" , "tumor" , "%" , "pBasesCovered1xOrHigher" , "pBasesCovered1xOrHigher")
+genP("GCONT" , "C|D" , "GCONT normal plate libraries" , "normal" , "%" , "pBasesCovered1xOrHigher" , "pBasesCovered1xOrHigher")
+genP("GCONT", "A|B|C" , "GCONT tumor plate libraries" , "tumor" , "%" , "pBasesCovered1xOrHigher" , "pBasesCovered1xOrHigher")
+genP("GCONT" , "A|B|C" , "GCONT normal plate libraries" , "normal" , "%" , "pBasesCovered1xOrHigher" , "pBasesCovered1xOrHigher")
+genP("GECCO", "C|D" , "GECCO tumor libraries" , "tumor" , "%" , "pBasesCovered10xOrHigher" , "pBasesCovered10xOrHigher")
+genP("GECCO" , "C|D" , "GECCO normal libraries" , "normal" , "%" , "pBasesCovered10xOrHigher" , "pBasesCovered10xOrHigher")
+genP("GECCO", "A|B|C" , "GECCO tumor libraries" , "tumor" , "%" , "pBasesCovered10xOrHigher" , "pBasesCovered10xOrHigher")
+genP("GECCO" , "A|B|C" , "GECCO normal libraries" , "normal" , "%" , "pBasesCovered10xOrHigher" , "pBasesCovered10xOrHigher")
+genP("GCONT", "C|D" , "GCONT tumor plate libraries" , "tumor" , "%" , "pBasesCovered10xOrHigher" , "pBasesCovered10xOrHigher")
+genP("GCONT" , "C|D" , "GCONT normal plate libraries" , "normal" , "%" , "pBasesCovered10xOrHigher" , "pBasesCovered10xOrHigher")
+genP("GCONT", "A|B|C" , "GCONT tumor plate libraries" , "tumor" , "%" , "pBasesCovered10xOrHigher" , "pBasesCovered10xOrHigher")
+genP("GCONT" , "A|B|C" , "GCONT normal plate libraries" , "normal" , "%" , "pBasesCovered10xOrHigher" , "pBasesCovered10xOrHigher")
+genP("GECCO", "C|D" , "GECCO tumor libraries" , "tumor" , "%" , "pBasesCovered25xOrHigher" , "pBasesCovered25xOrHigher")
+genP("GECCO" , "C|D" , "GECCO normal libraries" , "normal" , "%" , "pBasesCovered25xOrHigher" , "pBasesCovered25xOrHigher")
+genP("GECCO", "A|B|C" , "GECCO tumor libraries" , "tumor" , "%" , "pBasesCovered25xOrHigher" , "pBasesCovered25xOrHigher")
+genP("GECCO" , "A|B|C" , "GECCO normal libraries" , "normal" , "%" , "pBasesCovered25xOrHigher" , "pBasesCovered25xOrHigher")
+genP("GCONT", "C|D" , "GCONT tumor plate libraries" , "tumor" , "%" , "pBasesCovered25xOrHigher" , "pBasesCovered25xOrHigher")
+genP("GCONT" , "C|D" , "GCONT normal plate libraries" , "normal" , "%" , "pBasesCovered25xOrHigher" , "pBasesCovered25xOrHigher")
+genP("GCONT", "A|B|C" , "GCONT tumor plate libraries" , "tumor" , "%" , "pBasesCovered25xOrHigher" , "pBasesCovered25xOrHigher")
+genP("GCONT" , "A|B|C" , "GCONT normal plate libraries" , "normal" , "%" , "pBasesCovered25xOrHigher" , "pBasesCovered25xOrHigher")
+genP("GECCO", "C|D" , "GECCO tumor libraries" , "tumor" , "%" , "pBasesCovered50xOrHigher" , "pBasesCovered50xOrHigher")
+genP("GECCO" , "C|D" , "GECCO normal libraries" , "normal" , "%" , "pBasesCovered50xOrHigher" , "pBasesCovered50xOrHigher")
+genP("GECCO", "A|B|C" , "GECCO tumor libraries" , "tumor" , "%" , "pBasesCovered50xOrHigher" , "pBasesCovered50xOrHigher")
+genP("GECCO" , "A|B|C" , "GECCO normal libraries" , "normal" , "%" , "pBasesCovered50xOrHigher" , "pBasesCovered50xOrHigher")
+genP("GCONT", "C|D" , "GCONT tumor plate libraries" , "tumor" , "%" , "pBasesCovered50xOrHigher" , "pBasesCovered50xOrHigher")
+genP("GCONT" , "C|D" , "GCONT normal plate libraries" , "normal" , "%" , "pBasesCovered50xOrHigher" , "pBasesCovered50xOrHigher")
+genP("GCONT", "A|B|C" , "GCONT tumor plate libraries" , "tumor" , "%" , "pBasesCovered50xOrHigher" , "pBasesCovered50xOrHigher")
+genP("GCONT" , "A|B|C" , "GCONT normal plate libraries" , "normal" , "%" , "pBasesCovered50xOrHigher" , "pBasesCovered50xOrHigher")

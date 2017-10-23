@@ -9,6 +9,7 @@ gg_color_hue <- function(n) {
 
 rrdf <- read.table("/home/ubuntu/data/dxrx/core/run_reports/project_only/all.lanes.tsv",header=TRUE,sep="\t")
 
+
 output$runReports_totalReadsUI <- renderUI ({
 	if (input$runReports_totalReadsShowPanel) {
 		sidebarLayout(
@@ -88,6 +89,7 @@ output$runReports_totalReadsUI <- renderUI ({
 	}
 })
 
+
 output$runReports_totalReadsPlot <- renderPlotly({
 	t <- input$runReports_totalReadsFailThreshold
 
@@ -112,7 +114,7 @@ output$runReports_totalReadsPlot <- renderPlotly({
 
 	myseq <- seq(from=1,to=nrow(rrdf))
 	rrdf$record <- myseq
-	d <- data.frame(rrdf$Library , rrdf$record, as.numeric(gsub(",","",rrdf$PF.Reads)))
+	d <- data.frame(rrdf$Library , rrdf$record, as.numeric(gsub(",","",rrdf$PF.Reads)) )
 	d$is_pass <- as.factor((d[,3] > t)*1)
 	colnames(d) <- c("library","record","value","is_pass")
 	d <- data.frame(d , rrdf)
@@ -125,7 +127,7 @@ output$runReports_totalReadsPlot <- renderPlotly({
 		plot <- plot + geom_bar(stat="identity" , aes(text=paste("Library:" , library , "
 Run:" , Run , "
 Lane:" , Lane , "
-Barcode:",Barcode) ,fill=is_pass))   
+Barcode:",Barcode) ,fill=is_pass)) 
 	} else if (plot_type == "point") {
 		plot <- plot + geom_point(stat="identity" , aes(text=paste("Library:" , library , "
 Run:" , Run , "
@@ -186,6 +188,8 @@ Barcode:",Barcode) , color=is_pass))
 
 	ggplotly(plot)
 })
+
+
 output$runReports_insertMeanUI <- renderUI ({
 	if (input$runReports_insertMeanShowPanel) {
 		sidebarLayout(
@@ -265,6 +269,7 @@ output$runReports_insertMeanUI <- renderUI ({
 	}
 })
 
+
 output$runReports_insertMeanPlot <- renderPlotly({
 	t <- input$runReports_insertMeanFailThreshold
 
@@ -289,7 +294,7 @@ output$runReports_insertMeanPlot <- renderPlotly({
 
 	myseq <- seq(from=1,to=nrow(rrdf))
 	rrdf$record <- myseq
-	d <- data.frame(rrdf$Library, rrdf$record, rrdf$Insert_Mean)
+	d <- data.frame(rrdf$Library , rrdf$record, rrdf$Insert_Mean )
 	d$is_pass <- as.factor((d[,3] > t)*1)
 	colnames(d) <- c("library","record","value","is_pass")
 	d <- data.frame(d , rrdf)
@@ -302,7 +307,7 @@ output$runReports_insertMeanPlot <- renderPlotly({
 		plot <- plot + geom_bar(stat="identity" , aes(text=paste("Library:" , library , "
 Run:" , Run , "
 Lane:" , Lane , "
-Barcode:",Barcode) ,fill=is_pass))   
+Barcode:",Barcode) ,fill=is_pass)) 
 	} else if (plot_type == "point") {
 		plot <- plot + geom_point(stat="identity" , aes(text=paste("Library:" , library , "
 Run:" , Run , "
@@ -363,6 +368,8 @@ Barcode:",Barcode) , color=is_pass))
 
 	ggplotly(plot)
 })
+
+
 output$runReports_percentMappedUI <- renderUI ({
 	if (input$runReports_percentMappedShowPanel) {
 		sidebarLayout(
@@ -442,6 +449,7 @@ output$runReports_percentMappedUI <- renderUI ({
 	}
 })
 
+
 output$runReports_percentMappedPlot <- renderPlotly({
 	t <- input$runReports_percentMappedFailThreshold
 
@@ -466,7 +474,7 @@ output$runReports_percentMappedPlot <- renderPlotly({
 
 	myseq <- seq(from=1,to=nrow(rrdf))
 	rrdf$record <- myseq
-	d <- data.frame(rrdf$Library , rrdf$record, as.numeric(gsub("%","",rrdf$Map.Percent)))
+	d <- data.frame(rrdf$Library , rrdf$record, as.numeric(gsub("%","",rrdf$Map.Percent)) )
 	d$is_pass <- as.factor((d[,3] > t)*1)
 	colnames(d) <- c("library","record","value","is_pass")
 	d <- data.frame(d , rrdf)
@@ -479,7 +487,7 @@ output$runReports_percentMappedPlot <- renderPlotly({
 		plot <- plot + geom_bar(stat="identity" , aes(text=paste("Library:" , library , "
 Run:" , Run , "
 Lane:" , Lane , "
-Barcode:",Barcode) ,fill=is_pass))   
+Barcode:",Barcode) ,fill=is_pass)) 
 	} else if (plot_type == "point") {
 		plot <- plot + geom_point(stat="identity" , aes(text=paste("Library:" , library , "
 Run:" , Run , "
@@ -540,6 +548,8 @@ Barcode:",Barcode) , color=is_pass))
 
 	ggplotly(plot)
 })
+
+
 output$runReports_percentOntUI <- renderUI ({
 	if (input$runReports_percentOntShowPanel) {
 		sidebarLayout(
@@ -619,6 +629,7 @@ output$runReports_percentOntUI <- renderUI ({
 	}
 })
 
+
 output$runReports_percentOntPlot <- renderPlotly({
 	t <- input$runReports_percentOntFailThreshold
 
@@ -643,7 +654,7 @@ output$runReports_percentOntPlot <- renderPlotly({
 
 	myseq <- seq(from=1,to=nrow(rrdf))
 	rrdf$record <- myseq
-	d <- data.frame(rrdf$Library , rrdf$record, as.numeric(gsub("%","",rrdf$Percent.mapped.on.Target)))
+	d <- data.frame(rrdf$Library , rrdf$record, as.numeric(gsub("%","",rrdf$Percent.mapped.on.Target)) )
 	d$is_pass <- as.factor((d[,3] > t)*1)
 	colnames(d) <- c("library","record","value","is_pass")
 	d <- data.frame(d , rrdf)
@@ -656,7 +667,7 @@ output$runReports_percentOntPlot <- renderPlotly({
 		plot <- plot + geom_bar(stat="identity" , aes(text=paste("Library:" , library , "
 Run:" , Run , "
 Lane:" , Lane , "
-Barcode:",Barcode) ,fill=is_pass))   
+Barcode:",Barcode) ,fill=is_pass)) 
 	} else if (plot_type == "point") {
 		plot <- plot + geom_point(stat="identity" , aes(text=paste("Library:" , library , "
 Run:" , Run , "
@@ -717,6 +728,8 @@ Barcode:",Barcode) , color=is_pass))
 
 	ggplotly(plot)
 })
+
+
 output$runReports_meanCoverageUI <- renderUI ({
 	if (input$runReports_meanCoverageShowPanel) {
 		sidebarLayout(
@@ -796,6 +809,7 @@ output$runReports_meanCoverageUI <- renderUI ({
 	}
 })
 
+
 output$runReports_meanCoveragePlot <- renderPlotly({
 	t <- input$runReports_meanCoverageFailThreshold
 
@@ -820,7 +834,7 @@ output$runReports_meanCoveragePlot <- renderPlotly({
 
 	myseq <- seq(from=1,to=nrow(rrdf))
 	rrdf$record <- myseq
-	d <- data.frame(rrdf$Library , rrdf$record, as.numeric(gsub("x","",rrdf$Coverage)))
+	d <- data.frame(rrdf$Library , rrdf$record, as.numeric(gsub("x","",rrdf$Coverage)) )
 	d$is_pass <- as.factor((d[,3] > t)*1)
 	colnames(d) <- c("library","record","value","is_pass")
 	d <- data.frame(d , rrdf)
@@ -833,7 +847,7 @@ output$runReports_meanCoveragePlot <- renderPlotly({
 		plot <- plot + geom_bar(stat="identity" , aes(text=paste("Library:" , library , "
 Run:" , Run , "
 Lane:" , Lane , "
-Barcode:",Barcode) ,fill=is_pass))   
+Barcode:",Barcode) ,fill=is_pass)) 
 	} else if (plot_type == "point") {
 		plot <- plot + geom_point(stat="identity" , aes(text=paste("Library:" , library , "
 Run:" , Run , "
@@ -894,13 +908,4 @@ Barcode:",Barcode) , color=is_pass))
 
 	ggplotly(plot)
 })
-output$runReports_onTargetVSTotalReadsPlot <- renderPlot({
 
-	d <- data.frame(rrdf$Library, as.numeric(gsub(",","",rrdf$PF.Reads)), as.numeric(gsub("%","",rrdf$Percent.mapped.on.Target)))
-	colnames(d) <- c("library","my_x","my_y")
-	windowWidth <- max(d$my_x) * 1.10
-	windowHeight <- 100.0
-	plot <- ggplot(d, aes(x=my_x, y=my_y)) + geom_point() + labs(x="total reads (pass filter)", y="percent of mapped reads on target") + scale_x_continuous(limits=c(0.0,windowWidth)) + scale_y_continuous(limits=c(0.0,windowHeight))
-	plot <- plot + theme(legend.position="none" , axis.text.y = element_text(angle=45))
-	plot
-})

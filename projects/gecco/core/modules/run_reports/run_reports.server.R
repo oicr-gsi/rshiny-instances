@@ -9,12 +9,32 @@ gg_color_hue <- function(n) {
 
 rrdf <- read.table("/home/ubuntu/data/gecco/core/run_reports/project_only/all.lanes.tsv",header=TRUE,sep="\t")
 
+
 output$runReports_totalReadsUI <- renderUI ({
 	if (input$runReports_totalReadsShowPanel) {
 		sidebarLayout(
 			sidebarPanel(
+
+				radioButtons(
+					"runReports_totalReadsOrientationRadio",
+					"Plot Orientation",
+					c("horizontal" , "vertical")
+				),
+
+				radioButtons(
+					"runReports_totalReadsPlotTypeRadio",
+					"Plot Type",
+					c("point" , "bar")
+				),
+
+				radioButtons(
+					"runReports_totalReadsPlotSize",
+					"Plot Size",
+					c("full size" , "fit to screen")
+				),
+
 				sliderInput("runReports_totalReadsFailThreshold",
-					"fail threshold:",
+					"Fail Threshold:",
 					min = 0,
 					max = max(as.numeric(gsub(",","",rrdf$PF.Reads))) * 1.10,
 					value = 0
@@ -53,10 +73,11 @@ output$runReports_totalReadsUI <- renderUI ({
 				),
 				selectInput("runReports_totalReadsSelectType1", "",
 					c("equals" = "equals",
-					"contains" = "contains")
+					"contains" = "contains",
+					"does not equal" = "does_not_equal",
+					"does not contain" = "does_not_contain")
 				),
 				textInput("runReports_totalReadsSelectValue1", "", "")
-
 
 			),
 			mainPanel(
@@ -67,6 +88,7 @@ output$runReports_totalReadsUI <- renderUI ({
 		plotlyOutput("runReports_totalReadsPlot" , height="120vh")
 	}
 })
+
 
 output$runReports_totalReadsPlot <- renderPlotly({
 	t <- input$runReports_totalReadsFailThreshold
@@ -79,8 +101,11 @@ output$runReports_totalReadsPlot <- renderPlotly({
 			rrdf <- rrdf[which(rrdf[[select_column1]] == select_value1),]
 		} else if (select_type1 == "contains") {
 			rrdf <- rrdf[which(grepl(select_value1 , rrdf[[select_column1]])),]
+		} else if (select_type1 == "does_not_equal") {
+			rrdf <- rrdf[which(rrdf[[select_column1]] != select_value1),]
+		} else if (select_type1 == "does_not_contain") {
+			rrdf <- rrdf[which(!grepl(select_value1 , rrdf[[select_column1]])),]
 		}
-
 	}
 	groupby <- input$runReports_totalReadsGroup
 	if (groupby != "none") {
@@ -89,19 +114,29 @@ output$runReports_totalReadsPlot <- renderPlotly({
 
 	myseq <- seq(from=1,to=nrow(rrdf))
 	rrdf$record <- myseq
-	d <- data.frame(rrdf$Library , rrdf$record, as.numeric(gsub(",","",rrdf$PF.Reads)))
+	d <- data.frame(rrdf$Library , rrdf$record, as.numeric(gsub(",","",rrdf$PF.Reads)) )
 	d$is_pass <- as.factor((d[,3] > t)*1)
 	colnames(d) <- c("library","record","value","is_pass")
 	d <- data.frame(d , rrdf)
 	windowHeight <- max(d$value) * 1.10
+	orientation <- input$runReports_totalReadsOrientationRadio
+	plot_type <- input$runReports_totalReadsPlotTypeRadio
+
 	plot <- ggplot(d, aes(x=record, y=value))
-	plot <- plot + geom_bar(stat="identity" , aes(text=paste("Library:" , library , "
+	if (plot_type == "bar") {
+		plot <- plot + geom_bar(stat="identity" , aes(text=paste("Library:" , library , "
 Run:" , Run , "
 Lane:" , Lane , "
-Barcode:",Barcode) ,fill=is_pass))
+Barcode:",Barcode) ,fill=is_pass)) 
+	} else if (plot_type == "point") {
+		plot <- plot + geom_point(stat="identity" , aes(text=paste("Library:" , library , "
+Run:" , Run , "
+Lane:" , Lane , "
+Barcode:",Barcode) , color=is_pass))   
+	}
+
 	plot <- plot + labs(x="all libraries", y="total reads (pass filter)")
 	plot <- plot + scale_y_continuous(limits=c(0.0,windowHeight))
-	plot <- plot + scale_x_continuous(trans="reverse")
 	plot <- plot + geom_rect(data=NULL , aes(text=paste("threshold:", t) , x = NULL , y = NULL , xmin=0 , xmax=nrow(rrdf) , ymin=t , ymax=t), color="red" , linetype="dashed")
 	plot <- plot + geom_text(aes(x=0,y=t+(windowHeight * 0.02),label=t ), color="red")
 	unique.groupby <- unique(rrdf[[groupby]])
@@ -144,15 +179,42 @@ Barcode:",Barcode) ,fill=is_pass))
 
 	plot <- plot + theme(legend.position="none" , axis.text.y = element_text(angle=45))
 	plot <- plot + scale_fill_manual(values=c("0" = gg_color_hue(2)[1], "1" = gg_color_hue(2)[2] , "10" = gg_color_hue(6)[3] , "11" = gg_color_hue(10)[9] , "20" = "gray" , "21" = "lightgray"))
-	plot <- plot + coord_flip()
+	plot <- plot + scale_color_manual(values=c("0" = gg_color_hue(2)[1], "1" = gg_color_hue(2)[2] , "10" = gg_color_hue(6)[3] , "11" = gg_color_hue(10)[9] , "20" = "gray" , "21" = "lightgray"))
+
+	if (orientation == "horizontal") {
+		plot <- plot + scale_x_continuous(trans="reverse")
+		plot <- plot + coord_flip()    
+	}
+
 	ggplotly(plot)
 })
+
+
 output$runReports_insertMeanUI <- renderUI ({
 	if (input$runReports_insertMeanShowPanel) {
 		sidebarLayout(
 			sidebarPanel(
+
+				radioButtons(
+					"runReports_insertMeanOrientationRadio",
+					"Plot Orientation",
+					c("horizontal" , "vertical")
+				),
+
+				radioButtons(
+					"runReports_insertMeanPlotTypeRadio",
+					"Plot Type",
+					c("point" , "bar")
+				),
+
+				radioButtons(
+					"runReports_insertMeanPlotSize",
+					"Plot Size",
+					c("full size" , "fit to screen")
+				),
+
 				sliderInput("runReports_insertMeanFailThreshold",
-					"fail threshold:",
+					"Fail Threshold:",
 					min = 0,
 					max = max(rrdf$Insert_Mean),
 					value = 0
@@ -191,10 +253,11 @@ output$runReports_insertMeanUI <- renderUI ({
 				),
 				selectInput("runReports_insertMeanSelectType1", "",
 					c("equals" = "equals",
-					"contains" = "contains")
+					"contains" = "contains",
+					"does not equal" = "does_not_equal",
+					"does not contain" = "does_not_contain")
 				),
 				textInput("runReports_insertMeanSelectValue1", "", "")
-
 
 			),
 			mainPanel(
@@ -205,6 +268,7 @@ output$runReports_insertMeanUI <- renderUI ({
 		plotlyOutput("runReports_insertMeanPlot" , height="120vh")
 	}
 })
+
 
 output$runReports_insertMeanPlot <- renderPlotly({
 	t <- input$runReports_insertMeanFailThreshold
@@ -217,8 +281,11 @@ output$runReports_insertMeanPlot <- renderPlotly({
 			rrdf <- rrdf[which(rrdf[[select_column1]] == select_value1),]
 		} else if (select_type1 == "contains") {
 			rrdf <- rrdf[which(grepl(select_value1 , rrdf[[select_column1]])),]
+		} else if (select_type1 == "does_not_equal") {
+			rrdf <- rrdf[which(rrdf[[select_column1]] != select_value1),]
+		} else if (select_type1 == "does_not_contain") {
+			rrdf <- rrdf[which(!grepl(select_value1 , rrdf[[select_column1]])),]
 		}
-
 	}
 	groupby <- input$runReports_insertMeanGroup
 	if (groupby != "none") {
@@ -227,19 +294,29 @@ output$runReports_insertMeanPlot <- renderPlotly({
 
 	myseq <- seq(from=1,to=nrow(rrdf))
 	rrdf$record <- myseq
-	d <- data.frame(rrdf$Library, rrdf$record, rrdf$Insert_Mean)
+	d <- data.frame(rrdf$Library , rrdf$record, rrdf$Insert_Mean )
 	d$is_pass <- as.factor((d[,3] > t)*1)
 	colnames(d) <- c("library","record","value","is_pass")
 	d <- data.frame(d , rrdf)
 	windowHeight <- max(d$value) * 1.10
+	orientation <- input$runReports_insertMeanOrientationRadio
+	plot_type <- input$runReports_insertMeanPlotTypeRadio
+
 	plot <- ggplot(d, aes(x=record, y=value))
-	plot <- plot + geom_bar(stat="identity" , aes(text=paste("Library:" , library , "
+	if (plot_type == "bar") {
+		plot <- plot + geom_bar(stat="identity" , aes(text=paste("Library:" , library , "
 Run:" , Run , "
 Lane:" , Lane , "
-Barcode:",Barcode) ,fill=is_pass))
+Barcode:",Barcode) ,fill=is_pass)) 
+	} else if (plot_type == "point") {
+		plot <- plot + geom_point(stat="identity" , aes(text=paste("Library:" , library , "
+Run:" , Run , "
+Lane:" , Lane , "
+Barcode:",Barcode) , color=is_pass))   
+	}
+
 	plot <- plot + labs(x="all libraries", y="mean insert size")
 	plot <- plot + scale_y_continuous(limits=c(0.0,windowHeight))
-	plot <- plot + scale_x_continuous(trans="reverse")
 	plot <- plot + geom_rect(data=NULL , aes(text=paste("threshold:", t) , x = NULL , y = NULL , xmin=0 , xmax=nrow(rrdf) , ymin=t , ymax=t), color="red" , linetype="dashed")
 	plot <- plot + geom_text(aes(x=0,y=t+(windowHeight * 0.02),label=t ), color="red")
 	unique.groupby <- unique(rrdf[[groupby]])
@@ -282,15 +359,42 @@ Barcode:",Barcode) ,fill=is_pass))
 
 	plot <- plot + theme(legend.position="none" , axis.text.y = element_text(angle=45))
 	plot <- plot + scale_fill_manual(values=c("0" = gg_color_hue(2)[1], "1" = gg_color_hue(2)[2] , "10" = gg_color_hue(6)[3] , "11" = gg_color_hue(10)[9] , "20" = "gray" , "21" = "lightgray"))
-	plot <- plot + coord_flip()
+	plot <- plot + scale_color_manual(values=c("0" = gg_color_hue(2)[1], "1" = gg_color_hue(2)[2] , "10" = gg_color_hue(6)[3] , "11" = gg_color_hue(10)[9] , "20" = "gray" , "21" = "lightgray"))
+
+	if (orientation == "horizontal") {
+		plot <- plot + scale_x_continuous(trans="reverse")
+		plot <- plot + coord_flip()    
+	}
+
 	ggplotly(plot)
 })
+
+
 output$runReports_percentMappedUI <- renderUI ({
 	if (input$runReports_percentMappedShowPanel) {
 		sidebarLayout(
 			sidebarPanel(
+
+				radioButtons(
+					"runReports_percentMappedOrientationRadio",
+					"Plot Orientation",
+					c("horizontal" , "vertical")
+				),
+
+				radioButtons(
+					"runReports_percentMappedPlotTypeRadio",
+					"Plot Type",
+					c("point" , "bar")
+				),
+
+				radioButtons(
+					"runReports_percentMappedPlotSize",
+					"Plot Size",
+					c("full size" , "fit to screen")
+				),
+
 				sliderInput("runReports_percentMappedFailThreshold",
-					"fail threshold:",
+					"Fail Threshold:",
 					min = 0,
 					max = 100.0,
 					value = 0
@@ -329,10 +433,11 @@ output$runReports_percentMappedUI <- renderUI ({
 				),
 				selectInput("runReports_percentMappedSelectType1", "",
 					c("equals" = "equals",
-					"contains" = "contains")
+					"contains" = "contains",
+					"does not equal" = "does_not_equal",
+					"does not contain" = "does_not_contain")
 				),
 				textInput("runReports_percentMappedSelectValue1", "", "")
-
 
 			),
 			mainPanel(
@@ -343,6 +448,7 @@ output$runReports_percentMappedUI <- renderUI ({
 		plotlyOutput("runReports_percentMappedPlot" , height="120vh")
 	}
 })
+
 
 output$runReports_percentMappedPlot <- renderPlotly({
 	t <- input$runReports_percentMappedFailThreshold
@@ -355,8 +461,11 @@ output$runReports_percentMappedPlot <- renderPlotly({
 			rrdf <- rrdf[which(rrdf[[select_column1]] == select_value1),]
 		} else if (select_type1 == "contains") {
 			rrdf <- rrdf[which(grepl(select_value1 , rrdf[[select_column1]])),]
+		} else if (select_type1 == "does_not_equal") {
+			rrdf <- rrdf[which(rrdf[[select_column1]] != select_value1),]
+		} else if (select_type1 == "does_not_contain") {
+			rrdf <- rrdf[which(!grepl(select_value1 , rrdf[[select_column1]])),]
 		}
-
 	}
 	groupby <- input$runReports_percentMappedGroup
 	if (groupby != "none") {
@@ -365,19 +474,29 @@ output$runReports_percentMappedPlot <- renderPlotly({
 
 	myseq <- seq(from=1,to=nrow(rrdf))
 	rrdf$record <- myseq
-	d <- data.frame(rrdf$Library , rrdf$record, as.numeric(gsub("%","",rrdf$Map.Percent)))
+	d <- data.frame(rrdf$Library , rrdf$record, as.numeric(gsub("%","",rrdf$Map.Percent)) )
 	d$is_pass <- as.factor((d[,3] > t)*1)
 	colnames(d) <- c("library","record","value","is_pass")
 	d <- data.frame(d , rrdf)
 	windowHeight <- 100.0
+	orientation <- input$runReports_percentMappedOrientationRadio
+	plot_type <- input$runReports_percentMappedPlotTypeRadio
+
 	plot <- ggplot(d, aes(x=record, y=value))
-	plot <- plot + geom_bar(stat="identity" , aes(text=paste("Library:" , library , "
+	if (plot_type == "bar") {
+		plot <- plot + geom_bar(stat="identity" , aes(text=paste("Library:" , library , "
 Run:" , Run , "
 Lane:" , Lane , "
-Barcode:",Barcode) ,fill=is_pass))
+Barcode:",Barcode) ,fill=is_pass)) 
+	} else if (plot_type == "point") {
+		plot <- plot + geom_point(stat="identity" , aes(text=paste("Library:" , library , "
+Run:" , Run , "
+Lane:" , Lane , "
+Barcode:",Barcode) , color=is_pass))   
+	}
+
 	plot <- plot + labs(x="all libraries", y="percent of reads mapped to hg19")
 	plot <- plot + scale_y_continuous(limits=c(0.0,windowHeight))
-	plot <- plot + scale_x_continuous(trans="reverse")
 	plot <- plot + geom_rect(data=NULL , aes(text=paste("threshold:", t) , x = NULL , y = NULL , xmin=0 , xmax=nrow(rrdf) , ymin=t , ymax=t), color="red" , linetype="dashed")
 	plot <- plot + geom_text(aes(x=0,y=t+(windowHeight * 0.02),label=t ), color="red")
 	unique.groupby <- unique(rrdf[[groupby]])
@@ -420,15 +539,42 @@ Barcode:",Barcode) ,fill=is_pass))
 
 	plot <- plot + theme(legend.position="none" , axis.text.y = element_text(angle=45))
 	plot <- plot + scale_fill_manual(values=c("0" = gg_color_hue(2)[1], "1" = gg_color_hue(2)[2] , "10" = gg_color_hue(6)[3] , "11" = gg_color_hue(10)[9] , "20" = "gray" , "21" = "lightgray"))
-	plot <- plot + coord_flip()
+	plot <- plot + scale_color_manual(values=c("0" = gg_color_hue(2)[1], "1" = gg_color_hue(2)[2] , "10" = gg_color_hue(6)[3] , "11" = gg_color_hue(10)[9] , "20" = "gray" , "21" = "lightgray"))
+
+	if (orientation == "horizontal") {
+		plot <- plot + scale_x_continuous(trans="reverse")
+		plot <- plot + coord_flip()    
+	}
+
 	ggplotly(plot)
 })
+
+
 output$runReports_percentOntUI <- renderUI ({
 	if (input$runReports_percentOntShowPanel) {
 		sidebarLayout(
 			sidebarPanel(
+
+				radioButtons(
+					"runReports_percentOntOrientationRadio",
+					"Plot Orientation",
+					c("horizontal" , "vertical")
+				),
+
+				radioButtons(
+					"runReports_percentOntPlotTypeRadio",
+					"Plot Type",
+					c("point" , "bar")
+				),
+
+				radioButtons(
+					"runReports_percentOntPlotSize",
+					"Plot Size",
+					c("full size" , "fit to screen")
+				),
+
 				sliderInput("runReports_percentOntFailThreshold",
-					"fail threshold:",
+					"Fail Threshold:",
 					min = 0,
 					max = 100.0,
 					value = 0
@@ -467,10 +613,11 @@ output$runReports_percentOntUI <- renderUI ({
 				),
 				selectInput("runReports_percentOntSelectType1", "",
 					c("equals" = "equals",
-					"contains" = "contains")
+					"contains" = "contains",
+					"does not equal" = "does_not_equal",
+					"does not contain" = "does_not_contain")
 				),
 				textInput("runReports_percentOntSelectValue1", "", "")
-
 
 			),
 			mainPanel(
@@ -481,6 +628,7 @@ output$runReports_percentOntUI <- renderUI ({
 		plotlyOutput("runReports_percentOntPlot" , height="120vh")
 	}
 })
+
 
 output$runReports_percentOntPlot <- renderPlotly({
 	t <- input$runReports_percentOntFailThreshold
@@ -493,8 +641,11 @@ output$runReports_percentOntPlot <- renderPlotly({
 			rrdf <- rrdf[which(rrdf[[select_column1]] == select_value1),]
 		} else if (select_type1 == "contains") {
 			rrdf <- rrdf[which(grepl(select_value1 , rrdf[[select_column1]])),]
+		} else if (select_type1 == "does_not_equal") {
+			rrdf <- rrdf[which(rrdf[[select_column1]] != select_value1),]
+		} else if (select_type1 == "does_not_contain") {
+			rrdf <- rrdf[which(!grepl(select_value1 , rrdf[[select_column1]])),]
 		}
-
 	}
 	groupby <- input$runReports_percentOntGroup
 	if (groupby != "none") {
@@ -503,19 +654,29 @@ output$runReports_percentOntPlot <- renderPlotly({
 
 	myseq <- seq(from=1,to=nrow(rrdf))
 	rrdf$record <- myseq
-	d <- data.frame(rrdf$Library , rrdf$record, as.numeric(gsub("%","",rrdf$Percent.mapped.on.Target)))
+	d <- data.frame(rrdf$Library , rrdf$record, as.numeric(gsub("%","",rrdf$Percent.mapped.on.Target)) )
 	d$is_pass <- as.factor((d[,3] > t)*1)
 	colnames(d) <- c("library","record","value","is_pass")
 	d <- data.frame(d , rrdf)
 	windowHeight <- 100.0
+	orientation <- input$runReports_percentOntOrientationRadio
+	plot_type <- input$runReports_percentOntPlotTypeRadio
+
 	plot <- ggplot(d, aes(x=record, y=value))
-	plot <- plot + geom_bar(stat="identity" , aes(text=paste("Library:" , library , "
+	if (plot_type == "bar") {
+		plot <- plot + geom_bar(stat="identity" , aes(text=paste("Library:" , library , "
 Run:" , Run , "
 Lane:" , Lane , "
-Barcode:",Barcode) ,fill=is_pass))
+Barcode:",Barcode) ,fill=is_pass)) 
+	} else if (plot_type == "point") {
+		plot <- plot + geom_point(stat="identity" , aes(text=paste("Library:" , library , "
+Run:" , Run , "
+Lane:" , Lane , "
+Barcode:",Barcode) , color=is_pass))   
+	}
+
 	plot <- plot + labs(x="all libraries", y="percent of mapped reads on target")
 	plot <- plot + scale_y_continuous(limits=c(0.0,windowHeight))
-	plot <- plot + scale_x_continuous(trans="reverse")
 	plot <- plot + geom_rect(data=NULL , aes(text=paste("threshold:", t) , x = NULL , y = NULL , xmin=0 , xmax=nrow(rrdf) , ymin=t , ymax=t), color="red" , linetype="dashed")
 	plot <- plot + geom_text(aes(x=0,y=t+(windowHeight * 0.02),label=t ), color="red")
 	unique.groupby <- unique(rrdf[[groupby]])
@@ -558,15 +719,42 @@ Barcode:",Barcode) ,fill=is_pass))
 
 	plot <- plot + theme(legend.position="none" , axis.text.y = element_text(angle=45))
 	plot <- plot + scale_fill_manual(values=c("0" = gg_color_hue(2)[1], "1" = gg_color_hue(2)[2] , "10" = gg_color_hue(6)[3] , "11" = gg_color_hue(10)[9] , "20" = "gray" , "21" = "lightgray"))
-	plot <- plot + coord_flip()
+	plot <- plot + scale_color_manual(values=c("0" = gg_color_hue(2)[1], "1" = gg_color_hue(2)[2] , "10" = gg_color_hue(6)[3] , "11" = gg_color_hue(10)[9] , "20" = "gray" , "21" = "lightgray"))
+
+	if (orientation == "horizontal") {
+		plot <- plot + scale_x_continuous(trans="reverse")
+		plot <- plot + coord_flip()    
+	}
+
 	ggplotly(plot)
 })
+
+
 output$runReports_meanCoverageUI <- renderUI ({
 	if (input$runReports_meanCoverageShowPanel) {
 		sidebarLayout(
 			sidebarPanel(
+
+				radioButtons(
+					"runReports_meanCoverageOrientationRadio",
+					"Plot Orientation",
+					c("horizontal" , "vertical")
+				),
+
+				radioButtons(
+					"runReports_meanCoveragePlotTypeRadio",
+					"Plot Type",
+					c("point" , "bar")
+				),
+
+				radioButtons(
+					"runReports_meanCoveragePlotSize",
+					"Plot Size",
+					c("full size" , "fit to screen")
+				),
+
 				sliderInput("runReports_meanCoverageFailThreshold",
-					"fail threshold:",
+					"Fail Threshold:",
 					min = 0,
 					max = max(as.numeric(gsub("x","",rrdf$Coverage))) * 1.10,
 					value = 0
@@ -605,10 +793,11 @@ output$runReports_meanCoverageUI <- renderUI ({
 				),
 				selectInput("runReports_meanCoverageSelectType1", "",
 					c("equals" = "equals",
-					"contains" = "contains")
+					"contains" = "contains",
+					"does not equal" = "does_not_equal",
+					"does not contain" = "does_not_contain")
 				),
 				textInput("runReports_meanCoverageSelectValue1", "", "")
-
 
 			),
 			mainPanel(
@@ -619,6 +808,7 @@ output$runReports_meanCoverageUI <- renderUI ({
 		plotlyOutput("runReports_meanCoveragePlot" , height="120vh")
 	}
 })
+
 
 output$runReports_meanCoveragePlot <- renderPlotly({
 	t <- input$runReports_meanCoverageFailThreshold
@@ -631,8 +821,11 @@ output$runReports_meanCoveragePlot <- renderPlotly({
 			rrdf <- rrdf[which(rrdf[[select_column1]] == select_value1),]
 		} else if (select_type1 == "contains") {
 			rrdf <- rrdf[which(grepl(select_value1 , rrdf[[select_column1]])),]
+		} else if (select_type1 == "does_not_equal") {
+			rrdf <- rrdf[which(rrdf[[select_column1]] != select_value1),]
+		} else if (select_type1 == "does_not_contain") {
+			rrdf <- rrdf[which(!grepl(select_value1 , rrdf[[select_column1]])),]
 		}
-
 	}
 	groupby <- input$runReports_meanCoverageGroup
 	if (groupby != "none") {
@@ -641,19 +834,29 @@ output$runReports_meanCoveragePlot <- renderPlotly({
 
 	myseq <- seq(from=1,to=nrow(rrdf))
 	rrdf$record <- myseq
-	d <- data.frame(rrdf$Library , rrdf$record, as.numeric(gsub("x","",rrdf$Coverage)))
+	d <- data.frame(rrdf$Library , rrdf$record, as.numeric(gsub("x","",rrdf$Coverage)) )
 	d$is_pass <- as.factor((d[,3] > t)*1)
 	colnames(d) <- c("library","record","value","is_pass")
 	d <- data.frame(d , rrdf)
 	windowHeight <- max(d$value) * 1.10
+	orientation <- input$runReports_meanCoverageOrientationRadio
+	plot_type <- input$runReports_meanCoveragePlotTypeRadio
+
 	plot <- ggplot(d, aes(x=record, y=value))
-	plot <- plot + geom_bar(stat="identity" , aes(text=paste("Library:" , library , "
+	if (plot_type == "bar") {
+		plot <- plot + geom_bar(stat="identity" , aes(text=paste("Library:" , library , "
 Run:" , Run , "
 Lane:" , Lane , "
-Barcode:",Barcode) ,fill=is_pass))
+Barcode:",Barcode) ,fill=is_pass)) 
+	} else if (plot_type == "point") {
+		plot <- plot + geom_point(stat="identity" , aes(text=paste("Library:" , library , "
+Run:" , Run , "
+Lane:" , Lane , "
+Barcode:",Barcode) , color=is_pass))   
+	}
+
 	plot <- plot + labs(x="all libraries", y="mean coverage")
 	plot <- plot + scale_y_continuous(limits=c(0.0,windowHeight))
-	plot <- plot + scale_x_continuous(trans="reverse")
 	plot <- plot + geom_rect(data=NULL , aes(text=paste("threshold:", t) , x = NULL , y = NULL , xmin=0 , xmax=nrow(rrdf) , ymin=t , ymax=t), color="red" , linetype="dashed")
 	plot <- plot + geom_text(aes(x=0,y=t+(windowHeight * 0.02),label=t ), color="red")
 	unique.groupby <- unique(rrdf[[groupby]])
@@ -696,16 +899,13 @@ Barcode:",Barcode) ,fill=is_pass))
 
 	plot <- plot + theme(legend.position="none" , axis.text.y = element_text(angle=45))
 	plot <- plot + scale_fill_manual(values=c("0" = gg_color_hue(2)[1], "1" = gg_color_hue(2)[2] , "10" = gg_color_hue(6)[3] , "11" = gg_color_hue(10)[9] , "20" = "gray" , "21" = "lightgray"))
-	plot <- plot + coord_flip()
+	plot <- plot + scale_color_manual(values=c("0" = gg_color_hue(2)[1], "1" = gg_color_hue(2)[2] , "10" = gg_color_hue(6)[3] , "11" = gg_color_hue(10)[9] , "20" = "gray" , "21" = "lightgray"))
+
+	if (orientation == "horizontal") {
+		plot <- plot + scale_x_continuous(trans="reverse")
+		plot <- plot + coord_flip()    
+	}
+
 	ggplotly(plot)
 })
-output$runReports_onTargetVSTotalReadsPlot <- renderPlot({
 
-	d <- data.frame(rrdf$Library, as.numeric(gsub(",","",rrdf$PF.Reads)), as.numeric(gsub("%","",rrdf$Percent.mapped.on.Target)))
-	colnames(d) <- c("library","my_x","my_y")
-	windowWidth <- max(d$my_x) * 1.10
-	windowHeight <- 100.0
-	plot <- ggplot(d, aes(x=my_x, y=my_y)) + geom_point() + labs(x="total reads (pass filter)", y="percent of mapped reads on target") + scale_x_continuous(limits=c(0.0,windowWidth)) + scale_y_continuous(limits=c(0.0,windowHeight))
-	plot <- plot + theme(legend.position="none" , axis.text.y = element_text(angle=45))
-	plot
-})
